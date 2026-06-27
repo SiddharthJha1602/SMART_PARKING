@@ -299,18 +299,6 @@ This project demonstrates practical implementation of:
 
 ---
 
-# 🤝 Contributing
-
-Contributions are welcome.
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Create a Pull Request
-
----
-
 # 📜 License
 
 This project is developed for educational and academic purposes.
@@ -325,10 +313,5 @@ B.Tech Computer Science Engineering
 
 Manipal University Jaipur
 
-GitHub: https://github.com/yourusername
-
-LinkedIn: https://linkedin.com/in/yourprofile
-
----
 
 ⭐ If you found this project useful, don't forget to give it a **Star** on GitHub.
