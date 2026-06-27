@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Transactions — {{ app_name }}{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Wallet top-ups and parking-fee deductions</div>{% endblock %}
+
+{% block content %}
+
+<form method="GET" class="card card-pad mb-22" style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end;">
+  <div class="form-group mb-0" style="flex:1; min-width:180px;">
+    <label class="form-label">From</label>
+    <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+  </div>
+  <div class="form-group mb-0" style="flex:1; min-width:180px;">
+    <label class="form-label">To</label>
+    <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+  </div>
+  <div class="form-group mb-0" style="flex:2; min-width:220px;">
+    <label class="form-label">User or vehicle</label>
+    <input type="text" name="user_search" class="form-control" placeholder="Search…" value="{{ user_search }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="{{ url_for('admin.view_transactions') }}" class="btn btn-ghost">Reset</a>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vehicle</th><th>Owner</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Description</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td class="plate">{{ t.vehicle.vehicle_number if t.vehicle else '—' }}</td>
+          <td>{{ t.vehicle.owner.full_name if t.vehicle and t.vehicle.owner else '—' }}</td>
+          <td><span class="chip {{ 'chip-go' if t.transaction_type == 'Top-up' else 'chip-neutral' }}">{{ t.transaction_type }}</span></td>
+          <td class="mono">₹{{ "%.2f"|format(t.amount) }}</td>
+          <td class="mono">₹{{ "%.2f"|format(t.balance_after) }}</td>
+          <td class="muted">{{ t.description or '—' }}</td>
+          <td class="muted">{{ t.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7"><div class="empty-state"><h3>No transactions found</h3><p>Try adjusting your filters.</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

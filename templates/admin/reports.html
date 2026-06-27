@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Reports — {{ app_name }}{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Generate and download reports as PDF or CSV</div>{% endblock %}
+
+{% block content %}
+
+<div class="landing-features" style="padding:0; margin:0; max-width:none;">
+  {% for report in [
+    {'key': 'parking', 'title': 'Parking Report', 'desc': 'Every parking session with entry, exit, duration, and fee.'},
+    {'key': 'revenue', 'title': 'Revenue Report', 'desc': 'All fee deductions with running wallet balances.'},
+    {'key': 'compliance', 'title': 'Compliance Report', 'desc': 'Vehicles with expired or expiring insurance/PUC.'},
+    {'key': 'user-activity', 'title': 'User Activity Report', 'desc': 'Per-user vehicle count, sessions, and total spend.'}
+  ] %}
+  <div class="feature-card">
+    <div class="feature-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B1220" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    <h3>{{ report.title }}</h3>
+    <p class="mb-16">{{ report.desc }}</p>
+    <div class="flex-gap">
+      <a href="{{ url_for('admin.generate_report', report_type=report.key, fmt='pdf') }}" class="btn btn-outline btn-sm">Download PDF</a>
+      <a href="{{ url_for('admin.generate_report', report_type=report.key, fmt='csv') }}" class="btn btn-ghost btn-sm">Download CSV</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

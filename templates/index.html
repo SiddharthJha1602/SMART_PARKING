@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Parking System — Automated Vehicle Compliance & Parking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <section class="landing-hero">
+    <div class="auth-eyebrow" style="color:#8893A8;">SLOT A4 &middot; AVAILABLE &middot; EST. WAIT 0 MIN</div>
+    <h1>Every vehicle checked in, tracked, and billed — automatically.</h1>
+    <p>Plate recognition, compliance checks, and a simulated FASTag wallet, running entirely on one laptop. No external APIs, no hardware, no paid services.</p>
+    <div class="landing-hero-actions">
+      <a href="{{ url_for('auth.register') }}" class="btn btn-amber">Create an account</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,0.3); color:#fff;">Log in</a>
+    </div>
+  </section>
+
+  <div class="landing-strip">
+    <div class="landing-strip-item"><div class="num">10</div><div class="label">Parking Slots</div></div>
+    <div class="landing-strip-item"><div class="num">2</div><div class="label">Zones (A / B)</div></div>
+    <div class="landing-strip-item"><div class="num">OCR</div><div class="label">Plate Detection</div></div>
+    <div class="landing-strip-item"><div class="num">₹0</div><div class="label">External Costs</div></div>
+  </div>
+
+  <section class="landing-features">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B1220" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <h3>Plate recognition</h3>
+      <p>Upload a vehicle photo and OpenCV + EasyOCR locate and read the number plate, then match it against registered vehicles.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B1220" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h3>Compliance checks</h3>
+      <p>Insurance and pollution certificate validity are checked on every entry, with clear Valid / Expiring Soon / Expired badges.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B1220" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <h3>Simulated FASTag wallet</h3>
+      <p>Top up and auto-deduct parking fees from a local wallet balance per vehicle — no real payment gateway involved.</p>
+    </div>
+  </section>
+
+  <footer style="text-align:center; padding: 30px; color: var(--slate); font-size: 12.5px;">
+    &copy; {{ current_year }} {{ app_name }} — Academic demonstration project.
+  </footer>
+</body>
+</html>

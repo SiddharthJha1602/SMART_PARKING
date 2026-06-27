@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Reservations — {{ app_name }}{% endblock %}
+{% block page_title %}Reservations{% endblock %}
+
+{% block content %}
+
+<div class="chart-grid" style="grid-template-columns: 1fr 1.3fr; align-items:start;">
+
+  <div class="card card-pad">
+    <div class="section-title">Reserve a Slot</div>
+    {% if form.vehicle_id.choices %}
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <label class="form-label" for="{{ form.vehicle_id.id }}">Vehicle</label>
+        {{ form.vehicle_id(class="form-control") }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.slot_id.id }}">Available slot</label>
+        {{ form.slot_id(class="form-control") }}
+        {% if not form.slot_id.choices %}<div class="form-help">No slots are currently available.</div>{% endif %}
+      </div>
+      {{ form.submit(class="btn btn-amber btn-block") }}
+    </form>
+    {% else %}
+    <div class="empty-state">
+      <p>Register a vehicle first to make a reservation.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Your Reservations</h3></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Slot</th><th>Vehicle</th><th>Reserved For</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for r in reservations %}
+          <tr>
+            <td class="slot-code">{{ r.slot.slot_code if r.slot else '—' }}</td>
+            <td class="plate">{{ r.vehicle.vehicle_number if r.vehicle else '—' }}</td>
+            <td>{{ r.reserved_for.strftime('%d %b, %H:%M') }}</td>
+            <td><span class="chip {{ 'chip-go' if r.status == 'Active' else 'chip-neutral' }}">{{ r.status }}</span></td>
+            <td>
+              {% if r.status == 'Active' %}
+              <form method="POST" action="{{ url_for('user.cancel_reservation', reservation_id=r.id) }}">
+                <button type="submit" class="btn btn-ghost btn-sm">Cancel</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5"><div class="empty-state"><h3>No reservations yet</h3></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

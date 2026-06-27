@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create account — Smart Parking System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="flash-stack">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-visual">
+        <div>
+          <div class="brand-text" style="font-size:16px;">Smart Parking System</div>
+          <div class="barrier-bar"></div>
+          <p style="color:#C3CADC; font-size:13.5px; line-height:1.6; margin-top:18px;">
+            Register your vehicles, top up a simulated FASTag wallet, and reserve a slot before you arrive.
+          </p>
+        </div>
+      </div>
+
+      <div class="auth-form-side">
+        <div class="auth-eyebrow">Get started</div>
+        <h1 class="auth-title">Create your account</h1>
+        <p class="auth-subtitle">Takes less than a minute.</p>
+
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            <label class="form-label" for="{{ form.full_name.id }}">Full name</label>
+            {{ form.full_name(class="form-control", placeholder="Rahul Sharma") }}
+            {% for error in form.full_name.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="{{ form.email.id }}">Email</label>
+            {{ form.email(class="form-control", placeholder="you@example.com") }}
+            {% for error in form.email.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="{{ form.phone.id }}">Phone (optional)</label>
+            {{ form.phone(class="form-control", placeholder="9876543210") }}
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="{{ form.password.id }}">Password</label>
+              {{ form.password(class="form-control", placeholder="••••••••") }}
+              {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="{{ form.confirm_password.id }}">Confirm password</label>
+              {{ form.confirm_password(class="form-control", placeholder="••••••••") }}
+              {% for error in form.confirm_password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+            </div>
+          </div>
+
+          {{ form.submit(class="btn btn-amber btn-block") }}
+        </form>
+
+        <div class="auth-foot">
+          Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.env
+instance/
+*.log
+
+# Uploaded OCR images and generated reports (keep folders, ignore contents)
+uploads/*
+!uploads/.gitkeep
+reports/*
+!reports/.gitkeep
+
+.vscode/
+.idea/
+.DS_Store

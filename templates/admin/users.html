@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Users — {{ app_name }}{% endblock %}
+{% block page_title %}Users{% endblock %}
+{% block page_sub %}<div class="topbar-sub">All registered accounts</div>{% endblock %}
+
+{% block content %}
+
+<form method="GET" class="search-bar">
+  <input type="text" name="search" class="form-control" placeholder="Search by name or email…" value="{{ search }}">
+  <button type="submit" class="btn btn-outline">Search</button>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Vehicles</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.full_name }}</strong></td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.phone or '—' }}</td>
+          <td><span class="chip {{ 'chip-warn' if u.is_admin else 'chip-neutral' }}">{{ u.role }}</span></td>
+          <td>{{ u.vehicles|length }}</td>
+          <td class="muted">{{ u.created_at.strftime('%d %b %Y') }}</td>
+          <td>
+            {% if u.is_active_account %}
+              <span class="chip chip-go">Active</span>
+            {% else %}
+              <span class="chip chip-stop">Disabled</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.id != current_user.id %}
+            <form method="POST" action="{{ url_for('admin.toggle_user_active', user_id=u.id) }}">
+              <button type="submit" class="btn btn-ghost btn-sm">{{ 'Disable' if u.is_active_account else 'Enable' }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8"><div class="empty-state"><h3>No users found</h3></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

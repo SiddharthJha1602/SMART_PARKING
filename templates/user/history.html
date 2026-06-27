@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Parking History — {{ app_name }}{% endblock %}
+{% block page_title %}Parking History{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vehicle</th><th>Slot</th><th>Entry</th><th>Exit</th><th>Duration</th><th>Fee</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td class="plate">{{ s.vehicle.vehicle_number }}</td>
+          <td class="slot-code">{{ s.slot.slot_code if s.slot else '—' }}</td>
+          <td>{{ s.entry_time.strftime('%d %b, %H:%M') }}</td>
+          <td>{{ s.exit_time.strftime('%d %b, %H:%M') if s.exit_time else '—' }}</td>
+          <td>{{ s.duration_minutes ~ ' min' if s.duration_minutes else '—' }}</td>
+          <td class="mono">{{ '₹%.2f'|format(s.fee_charged) if s.fee_charged is not none else '—' }}</td>
+          <td><span class="chip {{ 'chip-go' if s.status == 'Completed' else 'chip-warn' }}">{{ s.status }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7"><div class="empty-state"><h3>No parking history yet</h3><p>Once you park, your sessions will show up here.</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

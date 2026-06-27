@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ vehicle.vehicle_number }} — {{ app_name }}{% endblock %}
+{% block page_title %}<span class="plate">{{ vehicle.vehicle_number }}</span>{% endblock %}
+{% block page_sub %}<div class="topbar-sub">{{ vehicle.owner_name }} &middot; {{ vehicle.vehicle_type }}</div>{% endblock %}
+{% block topbar_actions %}
+  <div class="flex-gap">
+    <a href="{{ url_for('admin.edit_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-outline btn-sm">Edit</a>
+    <form method="POST" action="{{ url_for('admin.delete_vehicle', vehicle_id=vehicle.id) }}" onsubmit="return confirm('Delete this vehicle and all its history?');">
+      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    </form>
+  </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="stat-grid" style="grid-template-columns: repeat(4,1fr);">
+  <div class="stat-card">
+    <div class="stat-label">Wallet Balance</div>
+    <div class="stat-value mono">₹{{ "%.2f"|format(vehicle.wallet_balance) }}</div>
+  </div>
+  <div class="stat-card {{ 'accent-go' if vehicle.insurance_status() == 'Valid' else 'accent-stop' }}">
+    <div class="stat-label">Insurance</div>
+    <div class="stat-value" style="font-size:16px;">{{ vehicle.insurance_status() }}</div>
+    <div class="stat-foot">Expires {{ vehicle.insurance_expiry.strftime('%d %b %Y') }}</div>
+  </div>
+  <div class="stat-card {{ 'accent-go' if vehicle.puc_status() == 'Valid' else 'accent-stop' }}">
+    <div class="stat-label">PUC Certificate</div>
+    <div class="stat-value" style="font-size:16px;">{{ vehicle.puc_status() }}</div>
+    <div class="stat-foot">Expires {{ vehicle.puc_expiry.strftime('%d %b %Y') }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Sessions</div>
+    <div class="stat-value">{{ history|length }}</div>
+  </div>
+</div>
+
+<div class="card mb-22">
+  <div class="card-head"><h3>Parking History</h3></div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Slot</th><th>Entry</th><th>Exit</th><th>Duration</th><th>Fee</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for s in history|sort(attribute='entry_time', reverse=true) %}
+        <tr>
+          <td class="slot-code">{{ s.slot.slot_code if s.slot else '—' }}</td>
+          <td>{{ s.entry_time.strftime('%d %b, %H:%M') }}</td>
+          <td>{{ s.exit_time.strftime('%d %b, %H:%M') if s.exit_time else '—' }}</td>
+          <td>{{ s.duration_minutes ~ ' min' if s.duration_minutes else '—' }}</td>
+          <td class="mono">{{ '₹%.2f'|format(s.fee_charged) if s.fee_charged is not none else '—' }}</td>
+          <td><span class="chip {{ 'chip-go' if s.status == 'Completed' else 'chip-warn' }}">{{ s.status }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6"><div class="empty-state"><h3>No parking sessions yet</h3></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>Wallet Transactions</h3></div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Type</th><th>Amount</th><th>Balance After</th><th>Description</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for t in transactions|sort(attribute='created_at', reverse=true) %}
+        <tr>
+          <td><span class="chip {{ 'chip-go' if t.transaction_type == 'Top-up' else 'chip-neutral' }}">{{ t.transaction_type }}</span></td>
+          <td class="mono">₹{{ "%.2f"|format(t.amount) }}</td>
+          <td class="mono">₹{{ "%.2f"|format(t.balance_after) }}</td>
+          <td class="muted">{{ t.description or '—' }}</td>
+          <td class="muted">{{ t.created_at.strftime('%d %b, %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5"><div class="empty-state"><h3>No transactions yet</h3></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

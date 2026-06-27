@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Compliance — {{ app_name }}{% endblock %}
+{% block page_title %}Compliance Violations{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Vehicles with expired or soon-to-expire documents</div>{% endblock %}
+{% block topbar_actions %}
+  <a href="{{ url_for('admin.generate_report', report_type='compliance', fmt='pdf') }}" class="btn btn-outline btn-sm">Export PDF</a>
+{% endblock %}
+
+{% block content %}
+
+{% if violations %}
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vehicle</th><th>Owner</th><th>Insurance</th><th>PUC</th><th>Overall</th><th></th></tr></thead>
+      <tbody>
+        {% for v in violations %}
+        <tr>
+          <td class="plate">{{ v.vehicle.vehicle_number }}</td>
+          <td>{{ v.vehicle.owner_name }}</td>
+          <td><span class="chip {{ 'chip-go' if v.insurance_status == 'Valid' else 'chip-warn' if v.insurance_status == 'Expiring Soon' else 'chip-stop' }}">{{ v.insurance_status }}</span></td>
+          <td><span class="chip {{ 'chip-go' if v.puc_status == 'Valid' else 'chip-warn' if v.puc_status == 'Expiring Soon' else 'chip-stop' }}">{{ v.puc_status }}</span></td>
+          <td><span class="chip {{ 'chip-warn' if v.overall_status == 'Expiring Soon' else 'chip-stop' }}">{{ v.overall_status }}</span></td>
+          <td><a href="{{ url_for('admin.vehicle_detail', vehicle_id=v.vehicle.id) }}" class="btn btn-ghost btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card"><div class="empty-state">
+  <div class="empty-icon">✅</div>
+  <h3>All vehicles are compliant</h3>
+  <p>No insurance or PUC violations at this time.</p>
+</div></div>
+{% endif %}
+
+{% endblock %}

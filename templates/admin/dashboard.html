@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ app_name }}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Live overview of slots, revenue, and compliance</div>{% endblock %}
+{% block topbar_actions %}
+  <a href="{{ url_for('ocr.upload') }}" class="btn btn-amber btn-sm">+ Record Entry</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Vehicles</div>
+    <div class="stat-value">{{ summary.total_vehicles }}</div>
+    <div class="stat-foot">Registered across all owners</div>
+  </div>
+  <div class="stat-card accent-amber">
+    <div class="stat-label">Active Sessions</div>
+    <div class="stat-value">{{ summary.active_sessions }}</div>
+    <div class="stat-foot">Vehicles currently parked</div>
+  </div>
+  <div class="stat-card accent-go">
+    <div class="stat-label">Revenue Today</div>
+    <div class="stat-value">₹{{ "%.0f"|format(summary.revenue_today) }}</div>
+    <div class="stat-foot">₹{{ "%.0f"|format(summary.revenue_month) }} this month</div>
+  </div>
+  <div class="stat-card accent-stop">
+    <div class="stat-label">Compliance Violations</div>
+    <div class="stat-value">{{ summary.compliance_violations }}</div>
+    <div class="stat-foot">Expired or expiring soon</div>
+  </div>
+</div>
+
+<div class="stat-grid" style="grid-template-columns: repeat(3,1fr);">
+  <div class="ticket-stub">
+    <div><div class="stat-label">Available</div><div class="slot-code" style="color:var(--go);">{{ summary.available_slots }}</div></div>
+    <span class="chip chip-go">Open</span>
+  </div>
+  <div class="ticket-stub">
+    <div><div class="stat-label">Occupied</div><div class="slot-code" style="color:var(--ink);">{{ summary.occupied_slots }}</div></div>
+    <span class="chip chip-neutral">In use</span>
+  </div>
+  <div class="ticket-stub">
+    <div><div class="stat-label">Reserved</div><div class="slot-code" style="color:var(--amber-deep);">{{ summary.reserved_slots }}</div></div>
+    <span class="chip chip-warn">Held</span>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="card">
+    <div class="card-head"><h3>Daily Parking Trend</h3><span class="muted" style="font-size:12px;">Last 7 days</span></div>
+    <div class="card-pad"><canvas id="parkingTrendChart" height="220"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Slot Utilization</h3></div>
+    <div class="card-pad"><canvas id="slotUtilChart" height="220"></canvas></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="card">
+    <div class="card-head"><h3>Revenue Trend</h3><span class="muted" style="font-size:12px;">Last 7 days</span></div>
+    <div class="card-pad"><canvas id="revenueTrendChart" height="220"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Vehicle Type Distribution</h3></div>
+    <div class="card-pad"><canvas id="vehicleDistChart" height="220"></canvas></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+spmsChartDefaults();
+
+const parkingTrend = {{ parking_trend|tojson }};
+const revenueTrend = {{ revenue_trend|tojson }};
+const slotUtil = {{ slot_util|tojson }};
+const vehicleDist = {{ vehicle_dist|tojson }};
+
+new Chart(document.getElementById('parkingTrendChart'), {
+  type: 'line',
+  data: {
+    labels: parkingTrend.labels,
+    datasets: [{
+      label: 'Sessions started',
+      data: parkingTrend.data,
+      borderColor: '#0B1220',
+      backgroundColor: 'rgba(255,182,39,0.18)',
+      fill: true,
+      tension: 0.35,
+      pointBackgroundColor: '#FFB627',
+      pointRadius: 4,
+    }]
+  },
+  options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+});
+
+new Chart(document.getElementById('revenueTrendChart'), {
+  type: 'bar',
+  data: {
+    labels: revenueTrend.labels,
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: revenueTrend.data,
+      backgroundColor: '#2BB673',
+      borderRadius: 4,
+      maxBarThickness: 36,
+    }]
+  },
+  options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+});
+
+new Chart(document.getElementById('slotUtilChart'), {
+  type: 'doughnut',
+  data: {
+    labels: slotUtil.labels,
+    datasets: [{
+      data: slotUtil.data,
+      backgroundColor: ['#2BB673', '#0B1220', '#FFB627'],
+      borderWidth: 0,
+    }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+});
+
+new Chart(document.getElementById('vehicleDistChart'), {
+  type: 'doughnut',
+  data: {
+    labels: vehicleDist.labels.length ? vehicleDist.labels : ['No data'],
+    datasets: [{
+      data: vehicleDist.data.length ? vehicleDist.data : [1],
+      backgroundColor: ['#0B1220', '#FFB627', '#2BB673', '#E5484D', '#6B7280'],
+      borderWidth: 0,
+    }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+});
+</script>
+{% endblock %}

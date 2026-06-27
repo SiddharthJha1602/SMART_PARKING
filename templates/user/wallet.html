@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Wallet — {{ vehicle.vehicle_number }}{% endblock %}
+{% block page_title %}Wallet{% endblock %}
+{% block page_sub %}<div class="topbar-sub"><span class="plate">{{ vehicle.vehicle_number }}</span></div>{% endblock %}
+
+{% block content %}
+
+<div class="chart-grid" style="grid-template-columns: 1fr 1fr; align-items:start;">
+
+  <div class="card card-pad">
+    <div class="section-title">Current Balance</div>
+    <div class="stat-value mono" style="font-size:34px; margin-bottom:20px;">₹{{ "%.2f"|format(vehicle.wallet_balance) }}</div>
+
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <label class="form-label" for="{{ form.amount.id }}">Add funds (₹)</label>
+        {{ form.amount(class="form-control", placeholder="500") }}
+        {% for error in form.amount.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+      {{ form.submit(class="btn btn-amber btn-block") }}
+    </form>
+    <p class="form-help mt-16">This is a simulated FASTag wallet — no real payment gateway is involved.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Transaction History</h3></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Type</th><th>Amount</th><th>Balance</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for t in transactions %}
+          <tr>
+            <td><span class="chip {{ 'chip-go' if t.transaction_type == 'Top-up' else 'chip-neutral' }}">{{ t.transaction_type }}</span></td>
+            <td class="mono">₹{{ "%.2f"|format(t.amount) }}</td>
+            <td class="mono">₹{{ "%.2f"|format(t.balance_after) }}</td>
+            <td class="muted">{{ t.created_at.strftime('%d %b, %H:%M') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4"><div class="empty-state"><h3>No transactions yet</h3></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

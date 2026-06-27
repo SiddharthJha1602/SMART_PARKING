@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Vehicle' if mode == 'edit' else 'Register Vehicle' }} — {{ app_name }}{% endblock %}
+{% block page_title %}{{ 'Edit Vehicle' if mode == 'edit' else 'Register Vehicle' }}{% endblock %}
+
+{% block content %}
+
+<div class="card card-pad" style="max-width:640px;">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.vehicle_number.id }}">Vehicle number</label>
+        {{ form.vehicle_number(class="form-control mono", placeholder="RJ14AB1234") }}
+        {% for error in form.vehicle_number.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.owner_name.id }}">Owner name</label>
+        {{ form.owner_name(class="form-control") }}
+        {% for error in form.owner_name.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.vehicle_type.id }}">Vehicle type</label>
+      {{ form.vehicle_type(class="form-control") }}
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.registration_date.id }}">Registration date</label>
+        {{ form.registration_date(class="form-control") }}
+        {% for error in form.registration_date.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.insurance_expiry.id }}">Insurance expiry</label>
+        {{ form.insurance_expiry(class="form-control") }}
+        {% for error in form.insurance_expiry.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.puc_expiry.id }}">PUC expiry</label>
+      {{ form.puc_expiry(class="form-control") }}
+      {% for error in form.puc_expiry.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+    </div>
+
+    <div class="flex-gap mt-16">
+      {{ form.submit(class="btn btn-primary") }}
+      <a href="{{ url_for('user.my_vehicles') }}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

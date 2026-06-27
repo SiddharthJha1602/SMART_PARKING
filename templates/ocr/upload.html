@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Plate Recognition — {{ app_name }}{% endblock %}
+{% block page_title %}Plate Recognition{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Upload a vehicle photo to detect and match its number plate</div>{% endblock %}
+
+{% block content %}
+
+<div class="chart-grid" style="grid-template-columns: 1fr 1fr; align-items: start;">
+
+  <div class="card card-pad">
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="upload-zone mb-16">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.6" style="margin-bottom:10px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <p class="muted mb-16" style="font-size:13.5px;">JPG, PNG, or BMP — clear, well-lit photos work best</p>
+        {{ form.image(class="form-control", id="plateImageInput") }}
+        {% for error in form.image.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div id="plateImagePreviewWrap" style="display:none; margin-bottom:16px;">
+        <img id="plateImagePreview" alt="Preview" style="width:100%; border-radius: var(--radius-md); border:1px solid #EDEAE1;">
+      </div>
+
+      {{ form.submit(class="btn btn-amber btn-block") }}
+    </form>
+  </div>
+
+  <div class="card card-pad">
+    <div class="section-title">Recognition Result</div>
+    {% if result %}
+      <div class="receipt-card" style="margin:0;">
+        <div class="receipt-row"><span>Detected text</span><span>{{ result.raw_text or '—' }}</span></div>
+        <div class="receipt-row"><span>Normalized plate</span><strong>{{ result.normalized_text or '—' }}</strong></div>
+        <div class="receipt-row"><span>OCR confidence</span><span>{{ (result.confidence * 100)|round(1) }}%</span></div>
+        <div class="receipt-row"><span>Plate region cropped</span><span>{{ 'Yes' if result.used_crop else 'Full image used' }}</span></div>
+      </div>
+
+      <div class="mt-16">
+        {% if matched_vehicle %}
+          <div class="ticket-stub mb-16">
+            <div>
+              <div class="muted" style="font-size:12px;">Matched vehicle</div>
+              <div class="slot-code">{{ matched_vehicle.vehicle_number }}</div>
+              <div class="muted" style="font-size:12.5px;">{{ matched_vehicle.owner_name }} &middot; {{ matched_vehicle.vehicle_type }}</div>
+            </div>
+            {% set overall = matched_vehicle.overall_compliance_status() %}
+            <span class="chip {{ 'chip-go' if overall == 'Valid' else 'chip-warn' if overall == 'Expiring Soon' else 'chip-stop' }}">{{ overall }}</span>
+          </div>
+
+          {% if matched_vehicle.is_compliant() %}
+          <form method="POST" action="{{ url_for('ocr.record_entry_from_ocr', vehicle_id=matched_vehicle.id) }}">
+            <button type="submit" class="btn btn-primary btn-block">Record Entry &amp; Allocate Slot</button>
+          </form>
+          {% else %}
+          <div class="flash flash-danger" style="position:static; box-shadow:none;">Entry blocked — insurance or PUC has expired.</div>
+          {% endif %}
+        {% else %}
+          <div class="empty-state" style="padding:24px 10px;">
+            <p>No matching vehicle in the database. Double-check registration or try a clearer photo.</p>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📷</div>
+        <h3>No image processed yet</h3>
+        <p>Upload a photo to see the detected plate text and matching vehicle here.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

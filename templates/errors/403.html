@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access denied</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="background:var(--ink);">
+  <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; color:var(--paper); text-align:center; padding:24px;">
+    <div style="font-family:var(--font-mono); color:var(--amber); font-size:14px; margin-bottom:10px;">ERROR 403</div>
+    <h1 style="font-size:28px; margin-bottom:10px;">Access denied at the gate.</h1>
+    <p style="color:#8893A8; max-width:380px; margin-bottom:24px;">You don't have permission to view this page. If this seems wrong, contact your administrator.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-amber">Back to safety</a>
+  </div>
+</body>
+</html>

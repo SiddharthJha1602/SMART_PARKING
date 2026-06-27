@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Vehicles — {{ app_name }}{% endblock %}
+{% block page_title %}Vehicles{% endblock %}
+{% block page_sub %}<div class="topbar-sub">All registered vehicles and their compliance status</div>{% endblock %}
+
+{% block content %}
+
+<form method="GET" class="search-bar">
+  <input type="text" name="search" id="liveVehicleSearch" class="form-control" placeholder="Search by vehicle number or owner…" value="{{ search }}" autocomplete="off">
+  <button type="submit" class="btn btn-outline">Search</button>
+</form>
+<div id="liveVehicleSearchResults" class="card" style="display:none; margin-bottom:18px; max-height:280px; overflow-y:auto;"></div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Vehicle No.</th>
+          <th>Owner</th>
+          <th>Type</th>
+          <th>Insurance</th>
+          <th>PUC</th>
+          <th>Wallet</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vehicles %}
+        <tr>
+          <td><span class="plate">{{ v.vehicle_number }}</span></td>
+          <td>{{ v.owner_name }}</td>
+          <td>{{ v.vehicle_type }}</td>
+          <td>
+            {% set ins = v.insurance_status() %}
+            <span class="chip {{ 'chip-go' if ins == 'Valid' else 'chip-warn' if ins == 'Expiring Soon' else 'chip-stop' }}">{{ ins }}</span>
+          </td>
+          <td>
+            {% set puc = v.puc_status() %}
+            <span class="chip {{ 'chip-go' if puc == 'Valid' else 'chip-warn' if puc == 'Expiring Soon' else 'chip-stop' }}">{{ puc }}</span>
+          </td>
+          <td class="mono">₹{{ "%.2f"|format(v.wallet_balance) }}</td>
+          <td>
+            {% set overall = v.overall_compliance_status() %}
+            <span class="chip {{ 'chip-go' if overall == 'Valid' else 'chip-warn' if overall == 'Expiring Soon' else 'chip-stop' }}">{{ overall }}</span>
+          </td>
+          <td>
+            <a href="{{ url_for('admin.vehicle_detail', vehicle_id=v.id) }}" class="btn btn-ghost btn-sm">View</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8"><div class="empty-state"><h3>No vehicles found</h3><p>Try a different search, or check back once owners register vehicles.</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

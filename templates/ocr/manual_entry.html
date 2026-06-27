@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Manual Entry — {{ app_name }}{% endblock %}
+{% block page_title %}Manual Entry{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Record a vehicle entry without using plate recognition</div>{% endblock %}
+
+{% block content %}
+
+<div class="card card-pad" style="max-width:520px;">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.vehicle_number.id }}">Vehicle number</label>
+      {{ form.vehicle_number(class="form-control mono", placeholder="RJ14AB1234", autocomplete="off") }}
+      {% for error in form.vehicle_number.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      <div class="form-help">Vehicle must already be registered in the system.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.slot_id.id }}">Slot</label>
+      {{ form.slot_id(class="form-control") }}
+      <div class="form-help">Leave on auto-allocate to let the system pick the best available slot.</div>
+    </div>
+
+    {{ form.submit(class="btn btn-primary btn-block") }}
+  </form>
+</div>
+
+{% endblock %}

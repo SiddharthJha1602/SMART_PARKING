@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Manual Exit — {{ app_name }}{% endblock %}
+{% block page_title %}Manual Exit{% endblock %}
+{% block page_sub %}<div class="topbar-sub">Record a vehicle exit and charge the parking fee</div>{% endblock %}
+
+{% block content %}
+
+<div class="chart-grid" style="grid-template-columns: 1fr 1fr; align-items:start;">
+  <div class="card card-pad">
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <label class="form-label" for="{{ form.vehicle_number.id }}">Vehicle number</label>
+        {{ form.vehicle_number(class="form-control mono", placeholder="RJ14AB1234", autocomplete="off") }}
+        {% for error in form.vehicle_number.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+      {{ form.submit(class="btn btn-primary btn-block") }}
+    </form>
+  </div>
+
+  <div class="card card-pad">
+    <div class="section-title">Receipt</div>
+    {% if receipt %}
+    <div class="receipt-card" style="margin:0;">
+      <div class="receipt-row"><span>Vehicle</span><strong>{{ receipt.vehicle_number }}</strong></div>
+      <div class="receipt-row"><span>Slot</span><span>{{ receipt.slot_code }}</span></div>
+      <div class="receipt-row"><span>Entry</span><span>{{ receipt.entry_time.strftime('%d %b, %H:%M') }}</span></div>
+      <div class="receipt-row"><span>Exit</span><span>{{ receipt.exit_time.strftime('%d %b, %H:%M') }}</span></div>
+      <div class="receipt-row"><span>Duration</span><span>{{ receipt.duration_minutes }} min</span></div>
+      <div class="receipt-row"><span>New wallet balance</span><span>₹{{ "%.2f"|format(receipt.wallet_balance) }}</span></div>
+      <div class="receipt-total flex-between"><span>Fee charged</span><span>₹{{ "%.2f"|format(receipt.fee_charged) }}</span></div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🧾</div>
+      <h3>No receipt yet</h3>
+      <p>Enter a vehicle number to record its exit and see the receipt here.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

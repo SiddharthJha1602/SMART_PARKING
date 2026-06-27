@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Profile — {{ app_name }}{% endblock %}
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+
+<div class="card card-pad" style="max-width:480px;">
+  <div class="flex-gap mb-22">
+    <div class="sidebar-user-avatar" style="background:var(--ink); width:52px; height:52px; font-size:18px;">{{ current_user.full_name[0]|upper }}</div>
+    <div>
+      <div style="font-weight:700; font-size:17px;">{{ current_user.full_name }}</div>
+      <div class="muted" style="font-size:13px;">{{ 'Administrator' if current_user.is_admin else 'Vehicle Owner' }}</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-label">Email</div>
+    <div class="muted">{{ current_user.email }}</div>
+  </div>
+  <div class="form-group">
+    <div class="form-label">Phone</div>
+    <div class="muted">{{ current_user.phone or 'Not provided' }}</div>
+  </div>
+  <div class="form-group">
+    <div class="form-label">Member since</div>
+    <div class="muted">{{ current_user.created_at.strftime('%d %B %Y') }}</div>
+  </div>
+  <div class="form-group mb-0">
+    <div class="form-label">Vehicles registered</div>
+    <div class="muted">{{ current_user.vehicles|length }}</div>
+  </div>
+</div>
+
+{% endblock %}

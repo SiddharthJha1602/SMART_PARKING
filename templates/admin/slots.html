@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Parking Slots — {{ app_name }}{% endblock %}
+{% block page_title %}Parking Slots{% endblock %}
+{% block page_sub %}<div class="topbar-sub">{{ occ.available }} available · {{ occ.occupied }} occupied · {{ occ.reserved }} reserved</div>{% endblock %}
+
+{% block content %}
+
+{% set zones = slots|groupby('zone') %}
+
+{% for zone, zone_slots in zones %}
+<div class="section-title">Zone {{ zone }}</div>
+<div class="stat-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 26px;">
+  {% for s in zone_slots %}
+  <div class="ticket-stub" style="flex-direction:column; align-items:flex-start; gap:8px;">
+    <div class="flex-between w-full">
+      <span class="slot-code">{{ s.slot_code }}</span>
+      <span class="chip {{ 'chip-go' if s.status == 'Available' else 'chip-warn' if s.status == 'Reserved' else 'chip-stop' }}">{{ s.status }}</span>
+    </div>
+    <div class="muted" style="font-size:12px;">{{ s.slot_type }}</div>
+    {% if s.status != 'Available' %}
+    <form method="POST" action="{{ url_for('admin.release_slot', slot_id=s.id) }}" class="w-full">
+      <button type="submit" class="btn btn-outline btn-sm w-full">Release</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% endblock %}

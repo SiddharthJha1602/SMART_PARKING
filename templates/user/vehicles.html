@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}My Vehicles — {{ app_name }}{% endblock %}
+{% block page_title %}My Vehicles{% endblock %}
+{% block topbar_actions %}
+  <a href="{{ url_for('user.add_vehicle') }}" class="btn btn-amber btn-sm">+ Register Vehicle</a>
+{% endblock %}
+
+{% block content %}
+
+{% if vehicles %}
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vehicle No.</th><th>Type</th><th>Insurance</th><th>PUC</th><th>Wallet</th><th></th></tr></thead>
+      <tbody>
+        {% for v in vehicles %}
+        <tr>
+          <td class="plate">{{ v.vehicle_number }}</td>
+          <td>{{ v.vehicle_type }}</td>
+          <td>
+            {% set ins = v.insurance_status() %}
+            <span class="chip {{ 'chip-go' if ins == 'Valid' else 'chip-warn' if ins == 'Expiring Soon' else 'chip-stop' }}">{{ ins }}</span>
+          </td>
+          <td>
+            {% set puc = v.puc_status() %}
+            <span class="chip {{ 'chip-go' if puc == 'Valid' else 'chip-warn' if puc == 'Expiring Soon' else 'chip-stop' }}">{{ puc }}</span>
+          </td>
+          <td class="mono">₹{{ "%.2f"|format(v.wallet_balance) }}</td>
+          <td><a href="{{ url_for('user.vehicle_detail', vehicle_id=v.id) }}" class="btn btn-ghost btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card"><div class="empty-state">
+  <div class="empty-icon">🚗</div>
+  <h3>No vehicles yet</h3>
+  <p>Register your vehicle to use parking, wallet, and reservation features.</p>
+  <a href="{{ url_for('user.add_vehicle') }}" class="btn btn-amber mt-16">Register a Vehicle</a>
+</div></div>
+{% endif %}
+
+{% endblock %}
